@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Audio Stories - Easy Listening</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <style>
+    :root {
+      /* === СВЕТЛАЯ ТЕМА === */
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --card-alt-bg: #fafbfc;
+      --text: #1a1d26;
+      --text-muted: #5f6b7a;
+      --accent: #0066cc;
+      --accent-hover: #0052a3;
+      --danger: #d32f2f;
+      --divider: #e1e4e8;
+      --border: #d1d5db;
+      
+      /* === РАЗМЕРЫ И ОТСТУПЫ === */
+      --border-radius: 16px;
+      --max-width: 900px;
+      --base-font: 18px;
+      --heading-font: 32px;
+      --spacing-unit: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: var(--base-font);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    /* Header */
+    header {
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 2px solid var(--divider);
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 999px;
+      background: linear-gradient(145deg, var(--accent-hover), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 28px;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-size: var(--heading-font);
+      margin: 0;
+      letter-spacing: 0.01em;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: var(--text-muted);
+      margin: 8px 0 0;
+      line-height: 1.5;
+    }
+
+    /* Упрощённые секции историй */
+    .story-section {
+      margin-bottom: 48px;
+    }
+
+    .story-item {
+      margin-bottom: 40px;
+      padding: 32px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .story-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Упрощённый заголовок без дополнительных рамок */
+    .story-header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .story-title {
+      font-size: 26px;
+      margin: 0 0 8px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .story-meta {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .parts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Карточки эпизодов с увеличенными обложками */
+    .part-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      align-items: stretch;
+    }
+
+    .part-card:nth-child(even) {
+      background: var(--card-alt-bg);
+    }
+
+    @media (hover: hover) {
+      .part-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 102, 204, 0.15);
+        border-color: var(--accent);
+      }
+
+      .part-card:hover .play-overlay {
+        opacity: 1;
+      }
+    }
+
+    .part-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(0, 102, 204, 0.12);
+    }
+
+    .part-card.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* УВЕЛИЧЕННАЯ ОБЛОЖКА для возрастной аудитории 60+ */
+    .part-thumbnail {
+      position: relative;
+      flex: 0 0 320px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .part-thumbnail img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
+      background: rgba(0, 102, 204, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .part-card.locked .play-overlay {
+      background: rgba(211, 47, 47, 0.95);
+      opacity: 1;
+    }
+
+    .part-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .part-number {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .part-duration {
+      display: none;
+    }
+
+    .part-status {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    .part-status.locked {
+      color: var(--danger);
+    }
+
+    footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 2px solid var(--divider);
+      font-size: 16px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --heading-font: 28px;
+      }
+
+      .logo-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .story-item {
+        padding: 24px;
+      }
+
+      .story-title {
+        font-size: 22px;
+      }
+
+      .part-card {
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      .part-thumbnail {
+        width: 100%;
+        flex: 0 0 auto;
+      }
+
+      .play-overlay {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo-row">
+        <div class="avatar">A</div>
+        <div>
+          <h1>Audio Stories Library</h1>
+          <p class="subtitle">
+            Listen without ads. Easy to use.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main id="stories">
+      <section class="story-section">
+        <div class="story-item">
+          <div class="story-header">
+            <h3 class="story-title">The Old Harbor Mystery</h3>
+            <p class="story-meta">3 parts · 45 minutes total</p>
+          </div>
+
+          <div class="parts-list" role="list" aria-label="Parts of The Old Harbor Mystery">
+            <div class="part-card" role="listitem" data-story-id="old-harbor-1">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 1 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 1: The Discovery</h4>
+                <p class="part-duration">15 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+
+            <div class="part-card" role="listitem" data-story-id="old-harbor-2">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 2 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 2: Following Clues</h4>
+                <p class="part-duration">18 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+
+            <div class="part-card" role="listitem" data-story-id="old-harbor-3">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 3 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 3: The Solution</h4>
+                <p class="part-duration">12 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-header">
+            <h3 class="story-title">Night Train to the North</h3>
+            <p class="story-meta">2 parts · 30 minutes total</p>
+          </div>
+
+          <div class="parts-list" role="list" aria-label="Parts of Night Train to the North">
+            <div class="part-card" role="listitem" data-story-id="night-train-1">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 1 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 1: Departure</h4>
+                <p class="part-duration">16 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+
+            <div class="part-card" role="listitem" data-story-id="night-train-2">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 2 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 2: Arrival</h4>
+                <p class="part-duration">14 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-section">
+        <div class="story-item">
+          <div class="story-header">
+            <h3 class="story-title">Desert Road, Long Night</h3>
+            <p class="story-meta">4 parts · Last part requires subscription</p>
+          </div>
+
+          <div class="parts-list" role="list" aria-label="Parts of Desert Road, Long Night">
+            <div class="part-card" role="listitem" data-story-id="desert-road-1">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 1 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 1: The Journey Begins</h4>
+                <p class="part-duration">12 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+
+            <div class="part-card" role="listitem" data-story-id="desert-road-2">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 2 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 2: Strange Encounter</h4>
+                <p class="part-duration">15 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+
+            <div class="part-card" role="listitem" data-story-id="desert-road-3">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 3 thumbnail" />
+                <div class="play-overlay">▶</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 3: Dark Secrets</h4>
+                <p class="part-duration">18 minutes</p>
+                <p class="part-status">Tap to Listen</p>
+              </div>
+            </div>
+
+            <div class="part-card locked" role="listitem" data-story-id="desert-road-4">
+              <div class="part-thumbnail">
+                <img src="" alt="Part 4 locked thumbnail" />
+                <div class="play-overlay">🔒</div>
+              </div>
+              <div class="part-info">
+                <h4 class="part-number">Part 4: Final Chapter</h4>
+                <p class="part-duration">20 minutes</p>
+                <p class="part-status locked">Subscribe to unlock</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Designed for comfortable listening on any device · Large buttons · Clear text · Easy navigation</p>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var imagePool = [
+        'images/1.png',
+        'images/2.png',
+        'images/3.png',
+        'images/4.png',
+        'images/5.png'
+      ];
+
+      var imgs = document.querySelectorAll('.part-thumbnail img');
+      if (!imagePool.length || !imgs.length) return;
+
+      imgs.forEach(function (img, index) {
+        var poolIndex = index % imagePool.length;
+        img.src = imagePool[poolIndex];
+      });
+
+      var cards = document.querySelectorAll('.part-card');
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          if (card.classList.contains('locked')) return;
+          var id = card.getAttribute('data-story-id');
+          console.log('Open player for: ', id);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
