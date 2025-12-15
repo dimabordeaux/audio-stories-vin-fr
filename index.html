@@ -529,35 +529,46 @@
       var audioTitle = document.getElementById('audio-title');
 
       var cards = document.querySelectorAll('.part-card');
-
+      
       cards.forEach(function (card) {
         card.addEventListener('click', function () {
           if (card.classList.contains('locked')) return;
 
           var title = card.querySelector('.part-number').textContent;
 
-          /*
-          TEMP AUDIO PLACEHOLDER
-          WILL BE REPLACED WITH CLOUDFLARE R2 URL
-          */
-          var audioUrl = 'https://pub-7b678d99db024a25952c016f424e4ba5.r2.dev';
+          // REAL AUDIO FILE URL
+          var audioUrl = 'https://pub-7b678d99db024a25952c016f424e4ba5.r2.dev/old-harbor-part-1.mp3';
 
+          // Stop previous playback
+          audio.pause();
+
+          // Remove previous event listeners (IMPORTANT)
+          audio.oncanplay = null;
+
+          // Set new source
           audioSource.src = audioUrl;
-          audio.load();
-          audio.play();
 
+          // Wait until audio is ready
+          audio.oncanplay = function () {
+            audio.play().catch(function (err) {
+              console.error('Playback failed:', err);
+            });
+          };
+
+          // Load AFTER handlers are set
+          audio.load();
+
+          // Update UI
           audioTitle.textContent = title;
           audioPlayer.classList.remove('hidden');
 
-          // Remove active class from all cards
           cards.forEach(function (c) {
             c.classList.remove('active');
           });
-
-          // Add active class to current card
           card.classList.add('active');
         });
       });
+
     });
   </script>
 </body>
