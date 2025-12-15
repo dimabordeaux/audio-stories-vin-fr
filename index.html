@@ -39,6 +39,7 @@
       font-size: var(--base-font);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      padding-bottom: 0;
     }
 
     .page {
@@ -260,6 +261,35 @@
       text-align: center;
     }
 
+    /* === GLOBAL AUDIO PLAYER (60+) === */
+    .audio-player {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 3px solid var(--accent);
+      padding: 16px 20px;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .audio-player.hidden {
+      display: none;
+    }
+
+    .audio-info {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .audio-player audio {
+      width: 100%;
+      height: 48px;
+    }
+
     @media (max-width: 768px) {
       :root {
         --heading-font: 28px;
@@ -290,6 +320,14 @@
 
       .play-overlay {
         display: none;
+      }
+
+      .audio-player {
+        padding: 12px 16px;
+      }
+
+      .audio-info {
+        font-size: 16px;
       }
     }
   </style>
@@ -454,8 +492,21 @@
     </footer>
   </div>
 
+  <!-- GLOBAL AUDIO PLAYER -->
+  <div id="audio-player" class="audio-player hidden">
+    <div class="audio-info">
+      <span id="audio-title">Playing story</span>
+    </div>
+
+    <audio id="audio" controls preload="metadata">
+      <source id="audio-source" src="" type="audio/mpeg" />
+      Your browser does not support audio.
+    </audio>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      /* KEEP EXISTING IMAGE LOGIC */
       var imagePool = [
         'images/1.png',
         'images/2.png',
@@ -465,19 +516,46 @@
       ];
 
       var imgs = document.querySelectorAll('.part-thumbnail img');
-      if (!imagePool.length || !imgs.length) return;
+      if (imagePool.length && imgs.length) {
+        imgs.forEach(function (img, index) {
+          img.src = imagePool[index % imagePool.length];
+        });
+      }
 
-      imgs.forEach(function (img, index) {
-        var poolIndex = index % imagePool.length;
-        img.src = imagePool[poolIndex];
-      });
+      /* === AUDIO PLAYER LOGIC === */
+      var audioPlayer = document.getElementById('audio-player');
+      var audio = document.getElementById('audio');
+      var audioSource = document.getElementById('audio-source');
+      var audioTitle = document.getElementById('audio-title');
 
       var cards = document.querySelectorAll('.part-card');
+
       cards.forEach(function (card) {
         card.addEventListener('click', function () {
           if (card.classList.contains('locked')) return;
-          var id = card.getAttribute('data-story-id');
-          console.log('Open player for: ', id);
+
+          var title = card.querySelector('.part-number').textContent;
+
+          /*
+          TEMP AUDIO PLACEHOLDER
+          WILL BE REPLACED WITH CLOUDFLARE R2 URL
+          */
+          var audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+
+          audioSource.src = audioUrl;
+          audio.load();
+          audio.play();
+
+          audioTitle.textContent = title;
+          audioPlayer.classList.remove('hidden');
+
+          // Remove active class from all cards
+          cards.forEach(function (c) {
+            c.classList.remove('active');
+          });
+
+          // Add active class to current card
+          card.classList.add('active');
         });
       });
     });
