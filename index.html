@@ -4,10 +4,30 @@
   <meta charset="UTF-8" />
   <title>Audio Stories - Easy Listening</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  
+
+  <!-- Load config FIRST -->
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var lang = (params.get("lang") || "").toLowerCase();
+
+      var host = (window.location.hostname || "").toLowerCase();
+      if (!lang) {
+        if (host.includes("it")) lang = "it";
+        else lang = "fr"; // default
+      }
+
+      var configSrc = (lang === "it") ? "config-it.js" : "config-fr.js";
+
+      var s = document.createElement("script");
+      s.src = configSrc;
+      s.async = false;
+      document.head.appendChild(s);
+    })();
+  </script>
+
   <style>
     :root {
-      /* === СВЕТЛАЯ ТЕМА === */
       --bg: #f5f7fa;
       --card-bg: #ffffff;
       --card-alt-bg: #fafbfc;
@@ -19,7 +39,6 @@
       --divider: #e1e4e8;
       --border: #d1d5db;
       
-      /* === РАЗМЕРЫ И ОТСТУПЫ === */
       --border-radius: 16px;
       --max-width: 900px;
       --base-font: 18px;
@@ -27,9 +46,7 @@
       --spacing-unit: 24px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -48,7 +65,6 @@
       padding: 32px 20px 64px;
     }
 
-    /* Header */
     header {
       margin-bottom: 40px;
       padding-bottom: 32px;
@@ -90,10 +106,7 @@
       line-height: 1.5;
     }
 
-    /* Упрощённые секции историй */
-    .story-section {
-      margin-bottom: 48px;
-    }
+    .story-section { margin-bottom: 48px; }
 
     .story-item {
       margin-bottom: 40px;
@@ -104,11 +117,8 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
-    .story-item:last-child {
-      margin-bottom: 0;
-    }
+    .story-item:last-child { margin-bottom: 0; }
 
-    /* Упрощённый заголовок без дополнительных рамок */
     .story-header {
       margin-bottom: 28px;
       padding-bottom: 20px;
@@ -136,7 +146,6 @@
       gap: 20px;
     }
 
-    /* Карточки эпизодов с увеличенными обложками */
     .part-card {
       background: var(--card-bg);
       border-radius: 12px;
@@ -150,9 +159,7 @@
       align-items: stretch;
     }
 
-    .part-card:nth-child(even) {
-      background: var(--card-alt-bg);
-    }
+    .part-card:nth-child(even) { background: var(--card-alt-bg); }
 
     @media (hover: hover) {
       .part-card:hover {
@@ -160,10 +167,7 @@
         box-shadow: 0 8px 24px rgba(0, 102, 204, 0.15);
         border-color: var(--accent);
       }
-
-      .part-card:hover .play-overlay {
-        opacity: 1;
-      }
+      .part-card:hover .play-overlay { opacity: 1; }
     }
 
     .part-card.active {
@@ -171,12 +175,8 @@
       box-shadow: 0 4px 16px rgba(0, 102, 204, 0.12);
     }
 
-    .part-card.locked {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    .part-card.locked { opacity: 0.6; cursor: not-allowed; }
 
-    /* УВЕЛИЧЕННАЯ ОБЛОЖКА для возрастной аудитории 60+ */
     .part-thumbnail {
       position: relative;
       flex: 0 0 320px;
@@ -237,9 +237,7 @@
       line-height: 1.3;
     }
 
-    .part-duration {
-      display: none;
-    }
+    .part-duration { display: none; }
 
     .part-status {
       font-size: 15px;
@@ -248,9 +246,7 @@
       margin: 0;
     }
 
-    .part-status.locked {
-      color: var(--danger);
-    }
+    .part-status.locked { color: var(--danger); }
 
     footer {
       margin-top: 64px;
@@ -261,7 +257,6 @@
       text-align: center;
     }
 
-    /* === GLOBAL AUDIO PLAYER (60+) === */
     .audio-player {
       position: fixed;
       bottom: 0;
@@ -274,9 +269,7 @@
       z-index: 1000;
     }
 
-    .audio-player.hidden {
-      display: none;
-    }
+    .audio-player.hidden { display: none; }
 
     .audio-info {
       font-size: 18px;
@@ -291,47 +284,19 @@
     }
 
     @media (max-width: 768px) {
-      :root {
-        --heading-font: 28px;
-      }
-
-      .logo-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .story-item {
-        padding: 24px;
-      }
-
-      .story-title {
-        font-size: 22px;
-      }
-
-      .part-card {
-        flex-direction: column;
-        padding: 16px;
-      }
-
-      .part-thumbnail {
-        width: 100%;
-        flex: 0 0 auto;
-      }
-
-      .play-overlay {
-        display: none;
-      }
-
-      .audio-player {
-        padding: 12px 16px;
-      }
-
-      .audio-info {
-        font-size: 16px;
-      }
+      :root { --heading-font: 28px; }
+      .logo-row { flex-direction: column; align-items: flex-start; }
+      .story-item { padding: 24px; }
+      .story-title { font-size: 22px; }
+      .part-card { flex-direction: column; padding: 16px; }
+      .part-thumbnail { width: 100%; flex: 0 0 auto; }
+      .play-overlay { display: none; }
+      .audio-player { padding: 12px 16px; }
+      .audio-info { font-size: 16px; }
     }
   </style>
 </head>
+
 <body>
   <div class="page">
     <header>
@@ -339,9 +304,7 @@
         <div class="avatar">A</div>
         <div>
           <h1>Audio Stories Library</h1>
-          <p class="subtitle">
-            Listen without ads. Easy to use.
-          </p>
+          <p class="subtitle">Listen without ads. Easy to use.</p>
         </div>
       </div>
     </header>
@@ -506,7 +469,6 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      /* KEEP EXISTING IMAGE LOGIC */
       var imagePool = [
         'images/1.png',
         'images/2.png',
@@ -522,7 +484,9 @@
         });
       }
 
-      /* === AUDIO PLAYER LOGIC === */
+      // Read config
+      var APP_CONFIG = window.APP_CONFIG || { language: "French", r2Folder: "French", testFile: "test-fr" };
+
       var audioPlayer = document.getElementById('audio-player');
       var audio = document.getElementById('audio');
       var audioSource = document.getElementById('audio-source');
@@ -536,10 +500,10 @@
         card.addEventListener('click', function () {
           if (card.classList.contains('locked')) return;
 
-          var storyId = card.getAttribute('data-story-id');
           var title = card.querySelector('.part-number').textContent;
 
-          var audioUrl = R2_BASE_URL + storyId + '.mp3';
+          // ВАЖНО: все карточки играют ОДИН тестовый файл для своего языка
+          var audioUrl = R2_BASE_URL + APP_CONFIG.r2Folder + '/' + APP_CONFIG.testFile + '.mp3';
 
           audio.pause();
           audio.oncanplay = null;
@@ -563,8 +527,6 @@
           card.classList.add('active');
         });
       });
-
-
     });
   </script>
 </body>
