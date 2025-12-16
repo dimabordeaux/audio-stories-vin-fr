@@ -23,6 +23,8 @@
       s.src = configSrc;
       s.async = false;
       document.head.appendChild(s);
+      
+      console.log("Loading config:", configSrc);
     })();
   </script>
 
@@ -469,6 +471,13 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      console.log("=== DOM LOADED ===");
+      
+      // Read config
+      var APP_CONFIG = window.APP_CONFIG || { language: "French", r2Folder: "French", testFile: "test-fr" };
+      console.log("APP_CONFIG loaded:", APP_CONFIG);
+
+      /* KEEP EXISTING IMAGE LOGIC */
       var imagePool = [
         'images/1.png',
         'images/2.png',
@@ -484,9 +493,7 @@
         });
       }
 
-      // Read config
-      var APP_CONFIG = window.APP_CONFIG || { language: "French", r2Folder: "French", testFile: "test-fr" };
-
+      /* === AUDIO PLAYER LOGIC === */
       var audioPlayer = document.getElementById('audio-player');
       var audio = document.getElementById('audio');
       var audioSource = document.getElementById('audio-source');
@@ -498,19 +505,31 @@
 
       cards.forEach(function (card) {
         card.addEventListener('click', function () {
-          if (card.classList.contains('locked')) return;
+          if (card.classList.contains('locked')) {
+            console.log("Card is locked, ignoring click.");
+            return;
+          }
 
           var title = card.querySelector('.part-number').textContent;
 
-          // ВАЖНО: все карточки играют ОДИН тестовый файл для своего языка
+          // BUILD URL: R2_BASE_URL + r2Folder + "/" + testFile + ".mp3"
           var audioUrl = R2_BASE_URL + APP_CONFIG.r2Folder + '/' + APP_CONFIG.testFile + '.mp3';
 
+          console.log("=== CARD CLICKED ===");
+          console.log("Title:", title);
+          console.log("Audio URL:", audioUrl);
+
+          // STOP & RESET
           audio.pause();
           audio.oncanplay = null;
 
           audioSource.src = audioUrl;
 
+          console.log("Set audio source, calling audio.load()...");
+
+          // WAIT FOR CANPLAY, THEN PLAY
           audio.oncanplay = function () {
+            console.log("audio.oncanplay fired → calling audio.play()");
             audio.play().catch(function (err) {
               console.error('Playback failed:', err);
             });
