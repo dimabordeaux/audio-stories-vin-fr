@@ -5,11 +5,13 @@
   <title>Audio Stories - Easy Listening</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+
   <!-- Load config FIRST -->
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
       var lang = (params.get("lang") || "").toLowerCase();
+
 
       var host = (window.location.hostname || "").toLowerCase();
       if (!lang) {
@@ -17,7 +19,9 @@
         else lang = "fr"; // default
       }
 
+
       var configSrc = (lang === "it") ? "config-it.js" : "config-fr.js";
+
 
       var s = document.createElement("script");
       s.src = configSrc;
@@ -27,6 +31,7 @@
       console.log("Loading config:", configSrc);
     })();
   </script>
+
 
   <style>
     :root {
@@ -46,9 +51,15 @@
       --base-font: 18px;
       --heading-font: 32px;
       --spacing-unit: 24px;
+      
+      --banner-height: 70px;
+      --banner-height-expanded: 130px;
+      --banner-height-subscribed: 46px;
     }
 
+
     * { box-sizing: border-box; }
+
 
     body {
       margin: 0;
@@ -61,13 +72,14 @@
       padding-bottom: 140px;
     }
 
+
     .top-nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       background: #ffffff;
-      border-bottom: 2px solid var(--divider);
+      border-top: 2px solid var(--divider);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       z-index: 1001;
       padding: 16px 20px;
@@ -76,6 +88,7 @@
       justify-content: space-between;
       gap: 16px;
     }
+
 
     .burger-btn,
     .search-btn {
@@ -89,15 +102,18 @@
       flex-shrink: 0;
     }
 
+
     .burger-btn:hover,
     .search-btn:hover {
       color: var(--accent);
     }
 
+
     .site-title-wrapper {
       flex: 1;
       text-align: center;
     }
+
 
     .site-title {
       font-size: 20px;
@@ -108,9 +124,11 @@
       display: block;
     }
 
+
     .site-title:hover {
       color: var(--accent);
     }
+
 
     .site-subtitle {
       font-size: 13px;
@@ -119,9 +137,10 @@
       margin-top: 2px;
     }
 
+
     .menu-dropdown {
       position: fixed;
-      top: 66px;
+      top: 75px;
       left: 0;
       right: 0;
       background: #ffffff;
@@ -133,17 +152,27 @@
       transition: max-height 0.3s ease;
     }
 
+
     .menu-dropdown.open {
       max-height: 500px;
     }
+
 
     .menu-search {
       padding: 20px;
       border-bottom: 1px solid var(--divider);
     }
 
+
+    .search-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+
     .menu-search input {
-      width: 100%;
+      flex: 1;
       padding: 12px 16px;
       font-size: 16px;
       border: 2px solid var(--border);
@@ -152,9 +181,32 @@
       transition: border-color 0.2s;
     }
 
+
     .menu-search input:focus {
       border-color: var(--accent);
     }
+
+
+    .search-submit-btn {
+      flex-shrink: 0;
+      width: 48px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .search-submit-btn:hover {
+      background: var(--accent-hover);
+    }
+
 
     .menu-items {
       list-style: none;
@@ -162,13 +214,16 @@
       padding: 0;
     }
 
+
     .menu-items li {
       border-bottom: 1px solid var(--divider);
     }
 
+
     .menu-items li:last-child {
       border-bottom: none;
     }
+
 
     .menu-items a {
       display: block;
@@ -179,39 +234,44 @@
       transition: background 0.2s;
     }
 
+
     .menu-items a:hover {
       background: var(--bg);
       color: var(--accent);
     }
+
 
     .menu-items a.placeholder {
       color: var(--text-muted);
       cursor: default;
     }
 
+
     .menu-items a.placeholder:hover {
       background: transparent;
       color: var(--text-muted);
     }
+
 
     .sections-nav {
       max-width: var(--max-width);
       margin: 90px auto 0;
       padding: 20px 20px;
       display: flex;
+      flex-wrap: wrap;
       gap: 12px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      justify-content: center;
     }
 
-    .sections-nav::-webkit-scrollbar {
-      height: 6px;
+
+    .section-chip:only-child {
+      display: none;
+    }
+    
+    .sections-nav:has(.section-chip:only-child) {
+      display: none;
     }
 
-    .sections-nav::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 3px;
-    }
 
     .section-chip {
       background: var(--card-bg);
@@ -224,13 +284,17 @@
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.2s;
-      flex-shrink: 0;
+      flex: 1 1 auto;
+      min-width: 120px;
+      text-align: center;
     }
+
 
     .section-chip:hover {
       border-color: var(--accent);
       color: var(--accent);
     }
+
 
     .section-chip.active {
       background: var(--accent);
@@ -238,13 +302,22 @@
       border-color: var(--accent);
     }
 
+
     .page {
       max-width: var(--max-width);
       margin: 0 auto;
       padding: 20px 20px 64px;
     }
 
+
+    .sections-nav:has(.section-chip:only-child) + .page,
+    .sections-nav:empty + .page {
+      margin-top: 90px;
+    }
+
+
     .story-section { margin-bottom: 48px; }
+
 
     .story-item {
       margin-bottom: 40px;
@@ -255,13 +328,16 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
+
     .story-item:last-child { margin-bottom: 0; }
+
 
     .story-header {
       margin-bottom: 28px;
       padding-bottom: 20px;
       border-bottom: 2px solid var(--accent);
     }
+
 
     .story-title {
       font-size: 26px;
@@ -271,6 +347,7 @@
       line-height: 1.3;
     }
 
+
     .story-meta {
       font-size: 16px;
       color: var(--text-muted);
@@ -278,11 +355,13 @@
       font-weight: 500;
     }
 
+
     .parts-list {
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
+
 
     .part-card {
       background: var(--card-bg);
@@ -292,12 +371,14 @@
       transition: all 0.3s ease;
       border: 1px solid var(--border);
       display: flex;
-      gap: 24px;
-      padding: 24px;
+      gap: 10px;
+      padding: 10px;
       align-items: stretch;
     }
 
+
     .part-card:nth-child(even) { background: var(--card-alt-bg); }
+
 
     @media (hover: hover) {
       .part-card:hover {
@@ -305,15 +386,53 @@
         box-shadow: 0 8px 24px rgba(0, 102, 204, 0.15);
         border-color: var(--accent);
       }
-      .part-card:hover .play-overlay { opacity: 1; }
+      .part-card:not(.playing):hover .play-overlay { opacity: 1; }
     }
+
 
     .part-card.active {
       border-color: var(--accent);
       box-shadow: 0 4px 16px rgba(0, 102, 204, 0.12);
     }
 
+
+    .part-card.playing .part-thumbnail {
+      position: relative;
+    }
+
+
+    .part-card.playing .part-thumbnail::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+
+
+    .part-card.playing .play-overlay {
+      opacity: 1;
+      z-index: 2;
+      font-size: 48px;
+      width: 100px;
+      height: 100px;
+    }
+
+
+    .part-card.paused .play-overlay {
+      opacity: 1;
+      z-index: 2;
+      font-size: 48px;
+      width: 100px;
+      height: 100px;
+    }
+
+
     .part-card.locked { opacity: 0.6; cursor: not-allowed; }
+
 
     .part-thumbnail {
       position: relative;
@@ -327,12 +446,14 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
+
     .part-thumbnail img {
       width: 100%;
       height: auto;
       object-fit: contain;
       display: block;
     }
+
 
     .play-overlay {
       position: absolute;
@@ -351,13 +472,15 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: all 0.3s ease;
     }
+
 
     .part-card.locked .play-overlay {
       background: rgba(211, 47, 47, 0.95);
       opacity: 1;
     }
+
 
     .part-info {
       flex: 1;
@@ -367,6 +490,7 @@
       justify-content: center;
     }
 
+
     .part-number {
       font-size: 20px;
       font-weight: 700;
@@ -375,7 +499,9 @@
       line-height: 1.3;
     }
 
+
     .part-duration { display: none; }
+
 
     .part-status {
       font-size: 15px;
@@ -384,7 +510,9 @@
       margin: 0;
     }
 
+
     .part-status.locked { color: var(--danger); }
+
 
     footer {
       margin-top: 64px;
@@ -395,117 +523,275 @@
       text-align: center;
     }
 
-    .banner-container {
+
+    .bottom-stack {
       position: fixed;
-      bottom: 96px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 25%;
-      max-width: 300px;
-      min-width: 250px;
+      bottom: 0;
+      left: 0;
+      right: 0;
       z-index: 500;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      display: flex;
+      flex-direction: column;
     }
 
-    .banner-container.visible {
-      opacity: 1;
-      visibility: visible;
+
+    .bottom-stack.hidden {
+      display: none;
     }
 
-    .banner {
+
+    .audio-player {
       background: #ffffff;
-      border: 2px solid var(--accent);
-      border-radius: 12px;
-      padding: 14px 16px;
-      box-shadow: 0 4px 16px rgba(0, 102, 204, 0.2);
-      text-align: center;
+      border-top: 3px solid var(--accent);
+      padding: 8px 20px;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
     }
+
+
+    .audio-player.hidden { display: none; }
+
+
+    .audio-player audio {
+      width: 100%;
+      height: 36px;
+    }
+
+
+    .subscribe-banner {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-top: 1px solid #e1e4e8;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      height: var(--banner-height);
+      transition: height 0.3s ease;
+      padding: 12px 20px;
+    }
+
+
+    .subscribe-banner.expanded {
+      height: var(--banner-height-expanded);
+    }
+
+
+    .subscribe-banner.subscribed {
+      background: #f0f9ff;
+      border-top: 2px solid var(--accent);
+      height: var(--banner-height-subscribed);
+    }
+
 
     .banner-text {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       color: var(--text);
-      margin: 0 0 10px;
+      margin: 0;
+      text-align: center;
+      letter-spacing: 0.3px;
     }
 
-    .banner-input {
-      width: 100%;
-      padding: 8px 10px;
+
+    .subscribe-banner.subscribed .banner-text {
       font-size: 14px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 8px;
-      outline: none;
+      color: var(--accent);
     }
+
+
+    .banner-form {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+
+    .banner-input {
+      text-align: center;
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 15px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      min-width: 0;
+      transition: all 0.2s;
+      background: #ffffff;
+    }
+
 
     .banner-input:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
     }
+
 
     .banner-btn {
       background: var(--accent);
       color: #ffffff;
       border: none;
-      padding: 8px 20px;
-      font-size: 14px;
+      padding: 12px 28px;
+      font-size: 15px;
       font-weight: 600;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s;
-      width: 100%;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      white-space: nowrap;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
+
 
     .banner-btn:hover {
       background: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
     }
 
-    .audio-player {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border-top: 3px solid var(--accent);
-      padding: 16px 20px;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
+
+    @media (min-width: 769px) {
+      :root {
+        --banner-height: 70px;
+        --banner-height-expanded: 70px;
+        --banner-height-subscribed: 46px;
+      }
+
+
+      .subscribe-banner {
+        padding: 10px 20px;
+      }
     }
 
-    .audio-player.hidden { display: none; }
-
-    .audio-info {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .audio-player audio {
-      width: 100%;
-      height: 60px;
-    }
 
     @media (max-width: 768px) {
-      :root { --heading-font: 28px; }
+      :root { 
+        --heading-font: 28px;
+        --banner-height: 85px;
+        --banner-height-expanded: 130px;
+        --banner-height-subscribed: 54px;
+      }
+      
       .site-title { font-size: 16px; }
       .site-subtitle { font-size: 11px; }
       .burger-btn, .search-btn { font-size: 24px; }
-      .sections-nav { margin-top: 80px; padding: 16px 20px; }
-      .section-chip { padding: 8px 16px; font-size: 14px; }
-      .banner-container { width: 80%; max-width: none; }
+      .section-chip { 
+        padding: 12px 18px; 
+        font-size: 15px;
+        flex: 1 1 auto;
+        min-width: 100px;
+      }
+      .section-chip:nth-last-child(n+4),
+      .section-chip:nth-last-child(n+4) ~ .section-chip {
+        flex: 1 1 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+      }
+
+
+      .subscribe-banner {
+        padding: 14px 16px;
+      }
+
+
+      .subscribe-banner.subscribed {
+        padding: 10px 16px;
+      }
+
+
+      .banner-text { 
+        font-size: 14px; 
+      }
+
+
+      .subscribe-banner.subscribed .banner-text {
+        font-size: 13px;
+      }
+
+
+      .banner-form {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+
+      .banner-input { 
+        padding: 13px 16px;
+        font-size: 15px;
+      }
+
+
+    /* Collapsed: button removed from layout */
+    .subscribe-banner:not(.expanded) .banner-btn {
+      display: none;
+    }
+
+    /* Expanded: button visible and clickable */
+    .subscribe-banner.expanded .banner-btn {
+      display: block;
+      padding: 13px 20px;
+      font-size: 15px;
+      width: 100%;
+    }
+
+
+
       .story-item { padding: 24px; }
       .story-title { font-size: 22px; }
       .part-card { flex-direction: column; padding: 16px; }
       .part-thumbnail { width: 100%; flex: 0 0 auto; }
-      .play-overlay { display: none; }
-      .audio-player { padding: 12px 16px; }
-      .audio-info { font-size: 16px; }
-      body { padding-bottom: 160px; }
+      .part-card:not(.playing):not(.paused) .play-overlay { display: none; }
+      
+      .audio-player { 
+        padding: 6px 16px;
+      }
+      
+      .audio-player audio { height: 36px; }
+      
+      body { padding-bottom: 200px; }
     }
+
+    audio::-webkit-media-controls-mute-button {
+      display: none !important;
+    }
+
+    audio::-webkit-media-controls-volume-slider {
+      display: none !important;
+    }
+
+    .audio-player {
+      position: relative;
+      gap: 12px;
+    }
+
+    .close-player-btn {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      background: var(--text-muted);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-player-btn:hover {
+      background: var(--text);
+      transform: scale(1.05);
+    }
+
+
+
   </style>
 </head>
+
 
 <body>
   <!-- TOP NAVIGATION -->
@@ -518,10 +804,14 @@
     <button class="search-btn" id="search-btn" aria-label="Search">🔍</button>
   </nav>
 
+
   <!-- DROPDOWN MENU -->
   <div class="menu-dropdown" id="menu-dropdown">
     <div class="menu-search">
-      <input type="text" placeholder="Search stories" aria-label="Search stories" />
+      <div class="search-wrapper">
+        <input type="text" id="search-input" placeholder="Search stories" aria-label="Search stories" />
+        <button class="search-submit-btn" id="search-submit-btn" aria-label="Submit search">🔍</button>
+      </div>
     </div>
     <ul class="menu-items">
       <li><a href="#">Login</a></li>
@@ -531,14 +821,12 @@
     </ul>
   </div>
 
+
   <!-- SECTIONS NAVIGATION -->
   <nav class="sections-nav">
     <div class="section-chip active">Detective</div>
-    <div class="section-chip">Romance</div>
-    <div class="section-chip">Kids</div>
-    <div class="section-chip">Adventure</div>
-    <div class="section-chip">New</div>
   </nav>
+
 
   <div class="page">
     <main id="stories">
@@ -549,6 +837,7 @@
             <p class="story-meta">3 parts · 45 minutes total</p>
           </div>
 
+
           <div class="parts-list" role="list" aria-label="Parts of The Old Harbor Mystery">
             <div class="part-card" role="listitem" data-story-id="old-harbor-1">
               <div class="part-thumbnail">
@@ -558,9 +847,9 @@
               <div class="part-info">
                 <h4 class="part-number">Part 1: The Discovery</h4>
                 <p class="part-duration">15 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
+
 
             <div class="part-card" role="listitem" data-story-id="old-harbor-2">
               <div class="part-thumbnail">
@@ -570,9 +859,9 @@
               <div class="part-info">
                 <h4 class="part-number">Part 2: Following Clues</h4>
                 <p class="part-duration">18 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
+
 
             <div class="part-card" role="listitem" data-story-id="old-harbor-3">
               <div class="part-thumbnail">
@@ -582,17 +871,18 @@
               <div class="part-info">
                 <h4 class="part-number">Part 3: The Solution</h4>
                 <p class="part-duration">12 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
           </div>
         </div>
+
 
         <div class="story-item">
           <div class="story-header">
             <h3 class="story-title">Night Train to the North</h3>
             <p class="story-meta">2 parts · 30 minutes total</p>
           </div>
+
 
           <div class="parts-list" role="list" aria-label="Parts of Night Train to the North">
             <div class="part-card" role="listitem" data-story-id="night-train-1">
@@ -603,9 +893,9 @@
               <div class="part-info">
                 <h4 class="part-number">Part 1: Departure</h4>
                 <p class="part-duration">16 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
+
 
             <div class="part-card" role="listitem" data-story-id="night-train-2">
               <div class="part-thumbnail">
@@ -615,12 +905,12 @@
               <div class="part-info">
                 <h4 class="part-number">Part 2: Arrival</h4>
                 <p class="part-duration">14 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
           </div>
         </div>
       </section>
+
 
       <section class="story-section">
         <div class="story-item">
@@ -628,6 +918,7 @@
             <h3 class="story-title">Desert Road, Long Night</h3>
             <p class="story-meta">4 parts · Last part requires subscription</p>
           </div>
+
 
           <div class="parts-list" role="list" aria-label="Parts of Desert Road, Long Night">
             <div class="part-card" role="listitem" data-story-id="desert-road-1">
@@ -638,9 +929,9 @@
               <div class="part-info">
                 <h4 class="part-number">Part 1: The Journey Begins</h4>
                 <p class="part-duration">12 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
+
 
             <div class="part-card" role="listitem" data-story-id="desert-road-2">
               <div class="part-thumbnail">
@@ -650,9 +941,9 @@
               <div class="part-info">
                 <h4 class="part-number">Part 2: Strange Encounter</h4>
                 <p class="part-duration">15 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
+
 
             <div class="part-card" role="listitem" data-story-id="desert-road-3">
               <div class="part-thumbnail">
@@ -662,9 +953,9 @@
               <div class="part-info">
                 <h4 class="part-number">Part 3: Dark Secrets</h4>
                 <p class="part-duration">18 minutes</p>
-                <p class="part-status">Tap to Listen</p>
               </div>
             </div>
+
 
             <div class="part-card locked" role="listitem" data-story-id="desert-road-4">
               <div class="part-thumbnail">
@@ -682,27 +973,27 @@
       </section>
     </main>
 
+
     <footer>
       <p>Designed for comfortable listening on any device · Large buttons · Clear text · Easy navigation</p>
     </footer>
   </div>
 
-  <!-- BANNER ABOVE PLAYER -->
-  <div class="banner-container" id="banner-container">
-    <div class="banner" id="banner"></div>
-  </div>
 
-  <!-- GLOBAL AUDIO PLAYER -->
-  <div id="audio-player" class="audio-player hidden">
-    <div class="audio-info">
-      <span id="audio-title">Playing story</span>
+  <div class="bottom-stack" id="bottom-stack">
+    <div id="audio-player" class="audio-player hidden">
+      <audio id="audio" controls preload="metadata">
+        <source id="audio-source" src="" type="audio/mpeg" />
+        Your browser does not support audio.
+      </audio>
+      <button class="close-player-btn" id="close-player-btn" aria-label="Close player">✕</button>
     </div>
 
-    <audio id="audio" controls preload="metadata">
-      <source id="audio-source" src="" type="audio/mpeg" />
-      Your browser does not support audio.
-    </audio>
+
+
+    <div class="subscribe-banner" id="subscribe-banner"></div>
   </div>
+
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -711,17 +1002,20 @@
       var APP_CONFIG = window.APP_CONFIG || { language: "French", r2Folder: "French", testFile: "test-fr" };
       console.log("APP_CONFIG loaded:", APP_CONFIG);
 
-      // Menu toggle
+
       var burgerBtn = document.getElementById('burger-btn');
       var searchBtn = document.getElementById('search-btn');
       var menuDropdown = document.getElementById('menu-dropdown');
+
 
       function toggleMenu() {
         menuDropdown.classList.toggle('open');
       }
 
+
       burgerBtn.addEventListener('click', toggleMenu);
       searchBtn.addEventListener('click', toggleMenu);
+
 
       document.addEventListener('click', function(e) {
         if (!menuDropdown.contains(e.target) && !burgerBtn.contains(e.target) && !searchBtn.contains(e.target)) {
@@ -729,13 +1023,34 @@
         }
       });
 
-      // Site title click
+
+      var searchInput = document.getElementById('search-input');
+      var searchSubmitBtn = document.getElementById('search-submit-btn');
+
+
+      function performSearch() {
+        var query = searchInput.value.trim();
+        if (query) {
+          console.log("Search query:", query);
+          alert('Searching for: ' + query);
+        }
+      }
+
+
+      searchSubmitBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+
+
       document.getElementById('site-title').addEventListener('click', function(e) {
         e.preventDefault();
         window.location.reload();
       });
 
-      // Section chips interaction
+
       var sectionChips = document.querySelectorAll('.section-chip');
       sectionChips.forEach(function(chip) {
         chip.addEventListener('click', function() {
@@ -746,18 +1061,51 @@
         });
       });
 
-      // Banner logic
-      var bannerContainer = document.getElementById('banner-container');
-      var banner = document.getElementById('banner');
+
+      var bottomStack = document.getElementById('bottom-stack');
+      var subscribeBanner = document.getElementById('subscribe-banner');
       var isSubscribed = localStorage.getItem('user_subscribed') === 'true';
 
+
+      var isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+
       if (isSubscribed) {
-        banner.innerHTML = '<p class="banner-text">🎁 Premium stories!</p><button class="banner-btn">Explore</button>';
+        subscribeBanner.classList.add('subscribed');
+        subscribeBanner.innerHTML = '<p class="banner-text">✓ Premium Active - Exclusive Stories Unlocked</p>';
       } else {
-        banner.innerHTML = '<p class="banner-text">📧 Get updates!</p><input type="email" class="banner-input" placeholder="Your email" /><button class="banner-btn">Subscribe</button>';
+        subscribeBanner.innerHTML = '<div class="banner-form"><input type="email" class="banner-input" id="email-input" placeholder="Enter Email For Exclusive Stories" /><button class="banner-btn" id="subscribe-btn">Subscribe</button></div>';
+        
+        var emailInput = document.getElementById('email-input');
+        var subscribeBtn = document.getElementById('subscribe-btn');
+
+
+        emailInput.addEventListener('focus', function() {
+          if (isMobile) {
+            subscribeBanner.classList.add('expanded');
+          }
+        });
+
+
+        emailInput.addEventListener('blur', function(e) {
+          setTimeout(function() {
+            if (document.activeElement !== subscribeBtn && isMobile) {
+              subscribeBanner.classList.remove('expanded');
+            }
+          }, 150);
+        });
+
+
+        subscribeBtn.addEventListener('click', function() {
+          var email = emailInput.value.trim();
+          if (email) {
+            console.log('Subscribe clicked with email:', email);
+            alert('Subscription submitted: ' + email);
+          }
+        });
       }
 
-      // Image pool
+
       var imagePool = [
         'images/1.png',
         'images/2.png',
@@ -766,6 +1114,7 @@
         'images/5.png'
       ];
 
+
       var imgs = document.querySelectorAll('.part-thumbnail img');
       if (imagePool.length && imgs.length) {
         imgs.forEach(function (img, index) {
@@ -773,15 +1122,29 @@
         });
       }
 
-      // Audio player logic
+
       var audioPlayer = document.getElementById('audio-player');
       var audio = document.getElementById('audio');
       var audioSource = document.getElementById('audio-source');
-      var audioTitle = document.getElementById('audio-title');
-
       var cards = document.querySelectorAll('.part-card');
+      var currentCard = null;
+
+      var closePlayerBtn = document.getElementById('close-player-btn');
+
+      closePlayerBtn.addEventListener('click', function() {
+        audio.pause();
+        audioPlayer.classList.add('hidden');
+        
+        if (currentCard) {
+          currentCard.classList.remove('active', 'playing', 'paused');
+          currentCard.querySelector('.play-overlay').textContent = '▶';
+          currentCard = null;
+        }
+      });
+
 
       var R2_BASE_URL = 'https://pub-4b7bf55d777b4490bd8558fea8cc6f85.r2.dev/';
+
 
       cards.forEach(function (card) {
         card.addEventListener('click', function () {
@@ -790,20 +1153,58 @@
             return;
           }
 
-          var title = card.querySelector('.part-number').textContent;
 
+          var isCurrentCard = (currentCard === card);
+          var isPaused = card.classList.contains('paused');
+          var isPlaying = card.classList.contains('playing');
+
+
+          if (isCurrentCard && isPlaying) {
+            audio.pause();
+            card.classList.remove('playing');
+            card.classList.add('paused');
+            card.querySelector('.play-overlay').textContent = '▶';
+            console.log("Paused current card");
+            return;
+          }
+
+
+          if (isCurrentCard && isPaused) {
+            audio.play().catch(function (err) {
+              console.error('Playback failed:', err);
+            });
+            card.classList.remove('paused');
+            card.classList.add('playing');
+            card.querySelector('.play-overlay').textContent = '||';
+            console.log("Resumed current card");
+            return;
+          }
+
+
+          if (currentCard && currentCard !== card) {
+            audio.pause();
+            currentCard.classList.remove('active', 'playing', 'paused');
+            currentCard.querySelector('.play-overlay').textContent = '▶';
+          }
+
+
+          currentCard = card;
           var audioUrl = R2_BASE_URL + APP_CONFIG.r2Folder + '/' + APP_CONFIG.testFile + '.mp3';
 
+
           console.log("=== CARD CLICKED ===");
-          console.log("Title:", title);
           console.log("Audio URL:", audioUrl);
+
 
           audio.pause();
           audio.oncanplay = null;
 
+
           audioSource.src = audioUrl;
 
+
           console.log("Set audio source, calling audio.load()...");
+
 
           audio.oncanplay = function () {
             console.log("audio.oncanplay fired → calling audio.play()");
@@ -812,19 +1213,46 @@
             });
           };
 
+
           audio.load();
 
-          audioTitle.textContent = title;
+
           audioPlayer.classList.remove('hidden');
 
-          // Show banner when audio starts playing
-          bannerContainer.classList.add('visible');
 
           cards.forEach(function (c) {
             c.classList.remove('active');
           });
-          card.classList.add('active');
+          
+          card.classList.add('active', 'playing');
+          card.querySelector('.play-overlay').textContent = '||';
         });
+      });
+
+
+      audio.addEventListener('ended', function() {
+        if (currentCard) {
+          currentCard.classList.remove('playing', 'paused');
+          currentCard.querySelector('.play-overlay').textContent = '▶';
+        }
+      });
+
+
+      audio.addEventListener('pause', function() {
+        if (currentCard && !audio.ended) {
+          currentCard.classList.remove('playing');
+          currentCard.classList.add('paused');
+          currentCard.querySelector('.play-overlay').textContent = '▶';
+        }
+      });
+
+
+      audio.addEventListener('play', function() {
+        if (currentCard) {
+          currentCard.classList.remove('paused');
+          currentCard.classList.add('playing');
+          currentCard.querySelector('.play-overlay').textContent = '||';
+        }
       });
     });
   </script>
