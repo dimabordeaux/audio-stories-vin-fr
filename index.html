@@ -58,13 +58,135 @@
       font-size: var(--base-font);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 0;
+      padding-bottom: 140px;
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-bottom: 2px solid var(--divider);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      z-index: 1001;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .burger-btn,
+    .search-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--text);
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .burger-btn:hover,
+    .search-btn:hover {
+      color: var(--accent);
+    }
+
+    .site-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+    }
+
+    .site-title:hover {
+      color: var(--accent);
+    }
+
+    .menu-dropdown {
+      position: fixed;
+      top: 66px;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-bottom: 2px solid var(--divider);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .menu-dropdown.open {
+      max-height: 500px;
+    }
+
+    .menu-search {
+      padding: 20px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .menu-search input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .menu-search input:focus {
+      border-color: var(--accent);
+    }
+
+    .menu-items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu-items li {
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .menu-items li:last-child {
+      border-bottom: none;
+    }
+
+    .menu-items a {
+      display: block;
+      padding: 16px 20px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 18px;
+      transition: background 0.2s;
+    }
+
+    .menu-items a:hover {
+      background: var(--bg);
+      color: var(--accent);
+    }
+
+    .menu-items a.placeholder {
+      color: var(--text-muted);
+      cursor: default;
+    }
+
+    .menu-items a.placeholder:hover {
+      background: transparent;
+      color: var(--text-muted);
     }
 
     .page {
       max-width: var(--max-width);
       margin: 0 auto;
-      padding: 32px 20px 64px;
+      padding: 100px 20px 64px;
     }
 
     header {
@@ -259,6 +381,69 @@
       text-align: center;
     }
 
+    .banner-container {
+      position: fixed;
+      bottom: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      max-width: 450px;
+      z-index: 500;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+      animation-delay: 0.3s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .banner {
+      background: #ffffff;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 16px rgba(0, 102, 204, 0.2);
+      text-align: center;
+    }
+
+    .banner-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+
+    .banner-input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 15px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      outline: none;
+    }
+
+    .banner-input:focus {
+      border-color: var(--accent);
+    }
+
+    .banner-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .banner-btn:hover {
+      background: var(--accent-hover);
+    }
+
     .audio-player {
       position: fixed;
       bottom: 0;
@@ -282,11 +467,14 @@
 
     .audio-player audio {
       width: 100%;
-      height: 48px;
+      height: 60px;
     }
 
     @media (max-width: 768px) {
       :root { --heading-font: 28px; }
+      .site-title { font-size: 16px; }
+      .burger-btn, .search-btn { font-size: 24px; }
+      .banner-container { width: 90%; }
       .logo-row { flex-direction: column; align-items: flex-start; }
       .story-item { padding: 24px; }
       .story-title { font-size: 22px; }
@@ -295,11 +483,32 @@
       .play-overlay { display: none; }
       .audio-player { padding: 12px 16px; }
       .audio-info { font-size: 16px; }
+      body { padding-bottom: 160px; }
     }
   </style>
 </head>
 
 <body>
+  <!-- TOP NAVIGATION -->
+  <nav class="top-nav">
+    <button class="burger-btn" id="burger-btn" aria-label="Menu">☰</button>
+    <a href="#" class="site-title" id="site-title">Audio Stories Library</a>
+    <button class="search-btn" id="search-btn" aria-label="Search">🔍</button>
+  </nav>
+
+  <!-- DROPDOWN MENU -->
+  <div class="menu-dropdown" id="menu-dropdown">
+    <div class="menu-search">
+      <input type="text" placeholder="Search stories" aria-label="Search stories" />
+    </div>
+    <ul class="menu-items">
+      <li><a href="#">Login</a></li>
+      <li><a href="#">Sign up</a></li>
+      <li><a href="#">Browse Stories</a></li>
+      <li><a href="#" class="placeholder">Shop (coming soon)</a></li>
+    </ul>
+  </div>
+
   <div class="page">
     <header>
       <div class="logo-row">
@@ -457,6 +666,11 @@
     </footer>
   </div>
 
+  <!-- BANNER ABOVE PLAYER -->
+  <div class="banner-container" id="banner-container">
+    <div class="banner" id="banner"></div>
+  </div>
+
   <!-- GLOBAL AUDIO PLAYER -->
   <div id="audio-player" class="audio-player hidden">
     <div class="audio-info">
@@ -473,11 +687,45 @@
     document.addEventListener('DOMContentLoaded', function () {
       console.log("=== DOM LOADED ===");
       
-      // Read config
       var APP_CONFIG = window.APP_CONFIG || { language: "French", r2Folder: "French", testFile: "test-fr" };
       console.log("APP_CONFIG loaded:", APP_CONFIG);
 
-      /* KEEP EXISTING IMAGE LOGIC */
+      // Menu toggle
+      var burgerBtn = document.getElementById('burger-btn');
+      var searchBtn = document.getElementById('search-btn');
+      var menuDropdown = document.getElementById('menu-dropdown');
+
+      function toggleMenu() {
+        menuDropdown.classList.toggle('open');
+      }
+
+      burgerBtn.addEventListener('click', toggleMenu);
+      searchBtn.addEventListener('click', toggleMenu);
+
+      document.addEventListener('click', function(e) {
+        if (!menuDropdown.contains(e.target) && !burgerBtn.contains(e.target) && !searchBtn.contains(e.target)) {
+          menuDropdown.classList.remove('open');
+        }
+      });
+
+      // Site title click
+      document.getElementById('site-title').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.reload();
+      });
+
+      // Banner logic
+      var bannerContainer = document.getElementById('banner-container');
+      var banner = document.getElementById('banner');
+      var isSubscribed = localStorage.getItem('user_subscribed') === 'true';
+
+      if (isSubscribed) {
+        banner.innerHTML = '<p class="banner-text">🎁 Premium stories available!</p><button class="banner-btn">Explore</button>';
+      } else {
+        banner.innerHTML = '<p class="banner-text">📧 Get story updates!</p><input type="email" class="banner-input" placeholder="Your email" /><button class="banner-btn">Subscribe</button>';
+      }
+
+      // Image pool
       var imagePool = [
         'images/1.png',
         'images/2.png',
@@ -493,7 +741,7 @@
         });
       }
 
-      /* === AUDIO PLAYER LOGIC === */
+      // Audio player logic
       var audioPlayer = document.getElementById('audio-player');
       var audio = document.getElementById('audio');
       var audioSource = document.getElementById('audio-source');
@@ -512,14 +760,12 @@
 
           var title = card.querySelector('.part-number').textContent;
 
-          // BUILD URL: R2_BASE_URL + r2Folder + "/" + testFile + ".mp3"
           var audioUrl = R2_BASE_URL + APP_CONFIG.r2Folder + '/' + APP_CONFIG.testFile + '.mp3';
 
           console.log("=== CARD CLICKED ===");
           console.log("Title:", title);
           console.log("Audio URL:", audioUrl);
 
-          // STOP & RESET
           audio.pause();
           audio.oncanplay = null;
 
@@ -527,7 +773,6 @@
 
           console.log("Set audio source, calling audio.load()...");
 
-          // WAIT FOR CANPLAY, THEN PLAY
           audio.oncanplay = function () {
             console.log("audio.oncanplay fired → calling audio.play()");
             audio.play().catch(function (err) {
