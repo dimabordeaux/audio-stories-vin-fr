@@ -362,7 +362,6 @@
       gap: 20px;
     }
 
-
     .part-card {
       background: var(--card-bg);
       border-radius: 12px;
@@ -659,7 +658,6 @@
         --banner-height-subscribed: 46px;
       }
 
-
       .subscribe-banner {
         padding: 10px 20px;
       }
@@ -689,53 +687,44 @@
         max-width: calc(50% - 6px);
       }
 
-
       .subscribe-banner {
         padding: 14px 16px;
       }
-
 
       .subscribe-banner.subscribed {
         padding: 10px 16px;
       }
 
-
       .banner-text { 
         font-size: 14px; 
       }
 
-
       .subscribe-banner.subscribed .banner-text {
         font-size: 13px;
       }
-
 
       .banner-form {
         flex-direction: column;
         gap: 10px;
       }
 
-
       .banner-input { 
         padding: 13px 16px;
         font-size: 15px;
       }
 
+      /* Collapsed: button removed from layout */
+      .subscribe-banner:not(.expanded) .banner-btn {
+        display: none;
+      }
 
-    /* Collapsed: button removed from layout */
-    .subscribe-banner:not(.expanded) .banner-btn {
-      display: none;
-    }
-
-    /* Expanded: button visible and clickable */
-    .subscribe-banner.expanded .banner-btn {
-      display: block;
-      padding: 13px 20px;
-      font-size: 15px;
-      width: 100%;
-    }
-
-
+      /* Expanded: button visible and clickable */
+      .subscribe-banner.expanded .banner-btn {
+        display: block;
+        padding: 13px 20px;
+        font-size: 15px;
+        width: 100%;
+      }
 
       .story-item { padding: 24px; }
       .story-title { font-size: 22px; }
@@ -786,9 +775,6 @@
       background: var(--text);
       transform: scale(1.05);
     }
-
-
-
   </style>
 </head>
 
@@ -989,8 +975,6 @@
       <button class="close-player-btn" id="close-player-btn" aria-label="Close player">✕</button>
     </div>
 
-
-
     <div class="subscribe-banner" id="subscribe-banner"></div>
   </div>
 
@@ -1067,7 +1051,10 @@
       var isSubscribed = localStorage.getItem('user_subscribed') === 'true';
 
 
-      var isMobile = window.matchMedia('(max-width: 768px)').matches;
+      // FIX 1: Check mobile status dynamically instead of once
+      function isMobileViewport() {
+        return window.matchMedia('(max-width: 768px)').matches;
+      }
 
 
       if (isSubscribed) {
@@ -1081,15 +1068,26 @@
 
 
         emailInput.addEventListener('focus', function() {
-          if (isMobile) {
+          // FIX 1: Check mobile status at the moment of focus
+          if (isMobileViewport()) {
             subscribeBanner.classList.add('expanded');
+            
+            // FIX 2: Scroll button into view after keyboard appears
+            setTimeout(function() {
+              subscribeBtn.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest',
+                inline: 'nearest'
+              });
+            }, 300);
           }
         });
 
 
         emailInput.addEventListener('blur', function(e) {
           setTimeout(function() {
-            if (document.activeElement !== subscribeBtn && isMobile) {
+            // FIX 1: Check mobile status dynamically on blur too
+            if (document.activeElement !== subscribeBtn && isMobileViewport()) {
               subscribeBanner.classList.remove('expanded');
             }
           }, 150);
